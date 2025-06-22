@@ -45,4 +45,5 @@ jobs:
       - name: Upload deb package
         uses: actions/upload-artifact@v4
         with:
+          name: ${{ matrix.package_name }}-${{ matrix.ros_distribution }}-deb
           path: ${{ steps.find_deb.outputs.deb_package }}
