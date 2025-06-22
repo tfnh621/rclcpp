@@ -31,6 +31,7 @@ jobs:
           apt-get install -y python3-bloom python3-rosdep fakeroot debhelper dh-python
       - name: Build ${{ matrix.package_name }} for ${{ matrix.ros_distribution }}
         run: |
+          rosdep update
           rosdep install -y --ignore-src --from-paths ${{ matrix.package_name }}
           cd ${{ matrix.package_name }}
           bloom-generate rosdebian
