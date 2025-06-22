@@ -11,6 +11,7 @@ jobs:
         ros_distribution:
           - humble
           - jazzy
+          - kilted
           - rolling
         package_name:
           - rclcpp
