@@ -1,0 +1,49 @@
+name: Build deb packages
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build_deb:
+    strategy:
+      matrix:
+        ros_distribution:
+          - humble
+          - jazzy
+          - rolling
+        package_name:
+          - rclcpp
+          - rclcpp_action
+          - rclcpp_components
+          - rclcpp_lifecycle
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+    container:
+      image: osrf/ros:${{ matrix.ros_distribution }}-desktop
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          apt-get update
+          # https://docs.ros.org/en/humble/How-To-Guides/Building-a-Custom-Deb-Package.html#install-dependencies
+          apt-get install -y python3-bloom python3-rosdep fakeroot debhelper dh-python
+      - name: Build ${{ matrix.package_name }} for ${{ matrix.ros_distribution }}
+        run: |
+          rosdep update
+          rosdep install -y --ignore-src --from-paths ${{ matrix.package_name }}
+          cd ${{ matrix.package_name }}
+          bloom-generate rosdebian
+          fakeroot debian/rules binary
+      - name: Collect deb package path and commit SHA
+        id: collect_info
+        run: |
+          echo "deb_package=$(find . -name '*.deb' | head -n 1)" >> $GITHUB_OUTPUT
+          echo "short_sha=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.collect_info.outputs.short_sha }}
+          files: ${{ steps.collect_info.outputs.deb_package }}
