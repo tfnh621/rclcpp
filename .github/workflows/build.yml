@@ -17,6 +17,7 @@ jobs:
           - rclcpp_action
           - rclcpp_components
           - rclcpp_lifecycle
+      fail-fast: false
 
     runs-on: ubuntu-latest
     container:
