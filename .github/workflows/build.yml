@@ -41,8 +41,8 @@ jobs:
         id: find_deb
         run: |
           echo "deb_package=$(find . -name '*.deb' | head -n 1)" >> $GITHUB_OUTPUT
-      - name: Upload deb package
-        uses: actions/upload-artifact@v4
+      - name: Create release
+        uses: softprops/action-gh-release@v2
         with:
-          name: ros-${{ matrix.ros_distribution }}-${{ matrix.package_name }}
-          path: ${{ steps.find_deb.outputs.deb_package }}
+          tag_name: ${{ github.sha }}
+          files: ${{ steps.find_deb.outputs.deb_package }}
