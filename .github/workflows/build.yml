@@ -41,7 +41,7 @@ jobs:
         id: collect_info
         run: |
           echo "deb_package=$(find . -name '*.deb' | head -n 1)" >> $GITHUB_OUTPUT
-          echo "short_sha=$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_OUTPUT
+          echo "short_sha=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
